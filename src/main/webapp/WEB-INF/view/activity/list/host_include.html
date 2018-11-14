@@ -1,0 +1,127 @@
+<p class="title">待审课题活动列表</p>
+<table id="activity-list-table" class="list-table" border="0" cellspacing="0" cellpadding="0"></table>
+<div id="activity-list-page" class="page-box"></div>
+<script type="text/javascript">
+    $(function () {
+        getActivityList($pageNum);
+    });
+
+    var activityListXhr;
+    function getActivityList(pageNum) {
+        if (activityListXhr) activityListXhr.abort();
+        activityListXhr = $.ajax({
+            url: "/api/activity/list",
+            type: "get",
+            data: "page_num=" + pageNum,
+            dataType: "json",
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    var data = result.data;
+                    var list = data.list;
+
+                    var tr = "";
+                    for (x in list) {
+                        tr += '<tr data-id="' + list[x].id + '">'
+                            + '<td class="theme">' + list[x].theme + '</td>'
+                            + '<td class="author">' + list[x].author + '</td>'
+                            + '<td class="date">' + list[x].date + '</td>'
+                            + '<td class="operate" style="padding: 0;">' + initOperate(list[x].id,list[x].state.value) + '</td>'
+                            + '<td class="submit" style="padding: 0;">' + initSubmit(list[x].state.value) + '</td>'
+                            + '</tr>';
+                    }
+
+                    var headTr = '<tr>'
+                        + '<th>主题</th>'
+                        + '<th>发布</th>'
+                        + '<th>日期</th>'
+                        + '<th>操作</th>'
+                        + '<th>提交</th>'
+                        + '</tr>';
+                    $("#activity-list-table").html(headTr + tr);
+
+                    initPage($("#activity-list-page"), data, getActivityList);
+                }
+            },error: function (result) {
+
+            }
+        });
+    }
+
+    function initOperate(id, state) {
+        var str = '<a class="icon browse" title="查看" data-url="/activity/' + id + '/show" onclick="openPage(this)"></a>';
+        switch (state) {
+            case -1:
+            case 1:
+                return str + '<a class="icon edit" title="更新" data-url="/activity/' + id + '/update" onclick="openPage(this)"></a>'
+                    + '<a class="icon delete" title="删除" onclick="activityDelete(this)"></a>';
+        }
+        return str;
+    }
+
+    function initSubmit(state) {
+        switch (state) {
+            case -1:
+            case 1:
+                return '<a class="btn btn-sure" onclick="activitySubmit(this)">提交</a>';
+            default:
+                return '<span>已提交</span>';
+        }
+    }
+
+    function activitySubmit(item) {
+        if (confirm("您确定提交吗？提交后将不能再修改！")) {
+            var tr = $(item).closest("tr");
+            var id = tr.data("id");
+            $.ajax({
+                url: "/api/activity/check",
+                type: "post",
+                data: "id=" + id,
+                dataType: "json",
+                cache: false,
+                beforeSend: function() {
+                },
+                complete: function() {
+                },
+                success: function (result) {
+                    alert(result.msg);
+                    if (result.code == 200) {
+                        tr.children(".operate").html(initOperate(id));
+                        tr.children(".submit").html(initSubmit());
+                    }
+                },error: function (result) {
+                    alert("网络连接失败！");
+                }
+            });
+        }
+
+    }
+
+    function activityDelete(item) {
+        if (confirm("您确定删除吗?此操作将不能恢复!")) {
+            var tr = $(item).closest("tr");
+            $.ajax({
+                url: "/api/activity/delete",
+                type: "post",
+                data: "id=" + tr.data("id"),
+                dataType: "json",
+                cache: false,
+                beforeSend: function () {
+                },
+                complete: function () {
+                },
+                success: function (result) {
+                    alert(result.msg);
+                    if (result.code == 200) {
+                        tr.remove();
+                    }
+                }, error: function (result) {
+                    alert("网络连接出错！");
+                }
+            });
+        }
+    }
+</script>

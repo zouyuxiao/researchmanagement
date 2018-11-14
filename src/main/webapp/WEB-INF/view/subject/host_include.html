@@ -1,0 +1,153 @@
+<p class="title">课题申报</p>
+<table class="card-box shadow-box" class="list-table" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <th>课题申报通知</th>
+        <th>开始时间</th>
+        <th>结束时间</th>
+        <th>状态</th>
+    </tr>
+    <tr>
+        <td>$!opentime.desc</td>
+        <td>$!dateTool.format('yyyy年MM月dd日',$opentime.startTime)</td>
+        <td>$!dateTool.format('yyyy年MM月dd日',$opentime.endTime)</td>
+        <td class="table-item">
+            #if($opentime.open)
+            <a class="btn btn-sure" data-url="/subject/add" onclick="openPage(this)">点击申报</a>
+            #else
+            <span>申报时间已经结束</span>
+            #end
+        </td>
+    </tr>
+</table>
+<table id="subject-list-table" class="list-table" border="0" cellspacing="0" cellpadding="0"></table>
+<div id="subject-list-page" class="page-box"></div>
+<script type="text/javascript">
+    $(function () {
+        getRecordList(1);
+    });
+
+    var recordListXhr;
+    function getRecordList(pageNum) {
+        if (recordListXhr) recordListXhr.abort();
+        recordListXhr = $.ajax({
+            url: "/api/subject/list",
+            type: "get",
+            data: "page_num=" + pageNum,
+            dataType: "json",
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    var data = result.data;
+                    var list = data.list;
+
+                    var tr = "";
+                    for (x in list) {
+                        tr += '<tr data-id="' + list[x].id + '">'
+                            + '<td class="name">' + list[x].name + '</td>'
+                            + '<td class="user-realname">' + list[x].year + '</td>'
+                            + '<td class="user-unit">' + list[x].classification.desc + '</td>'
+                            + '<td class="state">' + list[x].state.desc + '</td>'
+                            + '<td class="table-item operate">' + initOperate(list[x].id, list[x].state.value) + '</td>'
+                            + '<td class="table-item submit">' + initSubmit(list[x].state.value) + '</td>'
+                            + '</tr>';
+                    }
+
+                    var headTr = '<tr>'
+                        + '<th>标题</th>'
+                        + '<th>年度</th>'
+                        + '<th>学科</th>'
+                        + '<th>状态</th>'
+                        + '<th>操作</th>'
+                        + '<th>提交</th>'
+                        + '</tr>';
+                    $("#subject-list-table").html(headTr + tr);
+
+                    initPage($("#subject-list-page"), data, getRecordList);
+                }
+            },error: function (result) {
+
+            }
+        });
+    }
+    
+    function initOperate(id, state) {
+        var str = '<a class="icon browse" title="查看" data-url="/subject/' + id + '/show/approval" onclick="openPage(this)"></a>';
+        switch (state) {
+            case -1:
+            case 1:
+                return str + '<a class="icon edit" title="修改" data-url="/subject/' + id + '/edit/main" onclick="openPage(this)"></a>'
+                    + '<a class="icon delete" title="删除" onclick="subjectDelete(this)"></a>';
+        }
+        return str;
+    }
+    
+    function initSubmit(state) {
+        switch (state) {
+            case -1:
+            case 1:
+                return '<a class="btn btn-sure" onclick="subjectSubmit(this)">提交</a>';
+            default:
+                return '<span>已提交</span>';
+        }
+    }
+
+    function subjectSubmit(item) {
+        if (confirm("您确定提交吗？提交后将不能再修改！")) {
+            var tr = $(item).closest("tr");
+            var id = tr.data("id");
+            $.ajax({
+                url: "/api/subject/submit",
+                type: "post",
+                data: "id=" + id,
+                dataType: "json",
+                cache: false,
+                beforeSend: function() {
+                },
+                complete: function() {
+                },
+                success: function (result) {
+                    alert(result.msg);
+                    if (result.code == 200) {
+                        tr.children(".state").html("单位管理员审核中");
+                        tr.children(".operate").html(initOperate(id));
+                        tr.children(".submit").html(initSubmit());
+                    }
+                },error: function (result) {
+                    alert("网络连接失败！");
+                }
+            });
+        }
+
+    }
+
+    function subjectDelete(item) {
+        if (confirm("您确定删除吗?此操作将不能恢复!")) {
+            var tr = $(item).closest("tr");
+            var id = tr.data("id");
+            $.ajax({
+                url: "/api/subject/delete",
+                type: "post",
+                data: "id=" + id,
+                dataType: "json",
+                cache: false,
+                beforeSend: function() {
+                },
+                complete: function() {
+                },
+                success: function (result) {
+                    alert(result.msg);
+                    if (result.code == 200) {
+                        tr.remove();
+                    }
+                },error: function (result) {
+                    alert("网络连接失败！");
+                }
+            });
+        }
+
+    }
+</script>
+</script>

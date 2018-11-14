@@ -1,0 +1,58 @@
+<p class="title">课题申报列表</p>
+<table id="subject-list-table" class="list-table" border="0" cellspacing="0" cellpadding="0"></table>
+<div id="subject-list-page" class="page-box"></div>
+<script type="text/javascript">
+    $(function () {
+        getSubjectList($pageNum);
+    });
+
+    var subjectListXhr;
+    function getSubjectList(pageNum) {
+        if (subjectListXhr) subjectListXhr.abort();
+        subjectListXhr = $.ajax({
+            url: "/api/subject/list",
+            type: "get",
+            data: "page_num=" + pageNum,
+            dataType: "json",
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    var data = result.data;
+                    var list = data.list;
+
+                    var tr = "";
+                    for (x in list) {
+                        tr += '<tr data-id="' + list[x].id + '">'
+                            + '<td class="name">' + list[x].name + '</td>'
+                            + '<td class="user-realname">' + list[x].user.realname + '</td>'
+                            + '<td class="year">' + list[x].year + '</td>'
+                            + '<td class="category">' + list[x].category.desc + '</td>'
+                            + '<td class="classification">' + list[x].classification.desc + '</td>'
+                            + '<td class="table-item">'
+                            + '<a class="icon browse" title="查看" data-url="/subject/' + list[x].id + '/show/main" onclick="openPage(this)"></a>'
+                            + '<a class="icon edit" title="点评" data-url="/subject/' + list[x].id + '/check/school" onclick="openPage(this)"></a>'
+                            + '</td>'
+                            + '</tr>';
+                    }
+
+                    var headTr = '<tr>'
+                        + '<th>标题</th>'
+                        + '<th>支持人</th>'
+                        + '<th>年度</th>'
+                        + '<th>类别</th>'
+                        + '<th>学科</th>'
+                        + '<th>操作</th>'
+                        + '</tr>';
+                    $("#subject-list-table").html(headTr + tr);
+
+                    initPage($("#subject-list-page"), data, getSubjectList);
+                }
+            },error: function (result) {
+
+            }
+        });
+    }
+</script>

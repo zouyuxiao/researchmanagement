@@ -1,0 +1,87 @@
+<p class="title">课题主持人列表</p>
+<table id="user-list-table" class="list-table" border="0" cellspacing="0" cellpadding="0"></table>
+<div id="user-list-page" class="page-box"></div>
+<script type="text/javascript">
+    $(function () {
+        getUserList(1);
+    });
+
+    var userListXhr;
+    function getUserList(pageNum) {
+        if (userListXhr) userListXhr.abort();
+        userListXhr = $.ajax({
+            url: "/api/user/list",
+            type: "get",
+            data: "page_num=" + pageNum,
+            dataType: "json",
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    var data = result.data;
+                    var list = data.list;
+
+                    var tr = "";
+                    for (x in list) {
+                        tr += '<tr data-id="' + list[x].id + '">'
+                            + '<td class="name">' + list[x].realname + '</td>'
+                            + '<td class="gender">' + list[x].gender.desc + '</td>'
+                            + '<td class="birthday">' + list[x].birthday + '</td>'
+                            + '<td class="position">' + list[x].position + '</td>'
+                            + '<td class="unit">' + list[x].unit.name + '</td>'
+                            + '<td class="education">' + list[x].education + '</td>'
+                            + '<td class="profession">' + list[x].profession + '</td>'
+                            + '<td style="padding: 0;">'
+                            + '<a class="icon browse" title="查看" data-url="/user/' + list[x].id + '/info" onclick="openPage(this)"></a>'
+                            + '<a class="icon delete" title="删除" onclick="userDelete(this)"></a>'
+                            + '</td>'
+                            + '</tr>';
+                    }
+
+                    var headTr = '<tr>'
+                        + '<th>姓名</th>'
+                        + '<th>性别</th>'
+                        + '<th>出生年月</th>'
+                        + '<th>职务</th>'
+                        + '<th>职称</th>'
+                        + '<th>学历</th>'
+                        + '<th>专业</th>'
+                        + '<th>操作</th>'
+                        + '</tr>';
+                    $("#user-list-table").html(headTr + tr);
+
+                    initPage($("#user-list-page"), data, getUserList);
+                }
+            },error: function (result) {
+
+            }
+        });
+    }
+
+    function userDelete(item) {
+        if (confirm("您确定删除吗?此操作将不能恢复!")) {
+            var tr = $(item).closest("tr");
+            $.ajax({
+                url: "/api/user/delete",
+                type: "post",
+                data: "id=" + tr.data("id"),
+                dataType: "json",
+                cache: false,
+                beforeSend: function () {
+                },
+                complete: function () {
+                },
+                success: function (result) {
+                    alert(result.msg);
+                    if (result.code == 200) {
+                        tr.remove();
+                    }
+                }, error: function (result) {
+                    alert("网络连接出错！");
+                }
+            });
+        }
+    }
+</script>

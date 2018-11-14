@@ -1,0 +1,53 @@
+<p class="title">修改课题研究人员信息</p>
+<form id="subject-result-update-form">
+    <input type="hidden" name="subject_id" value="$!subjectId">
+    <input type="hidden" name="id" value="$!result.id">
+    <table class="input-table" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>负责人</td>
+            <td><input type="text" autocomplete="off" name="principal" value="$!result.principal"></td>
+        </tr>
+        <tr>
+            <td>完成时间</td>
+            <td><input type="text" autocomplete="off" name="completetime" value="$!dateTool.format('yyyy-MM-dd',$result.completetime)" onclick="JTC.setday()" onblur="checkDate(this)"></td>
+        </tr>
+        <tr>
+            <td>最终成果名称</td>
+            <td><input type="text" autocomplete="off" name="finalresult_name" value="$!result.finalresultName"></td>
+        </tr>
+        <tr>
+            <td>最终成果形式</td>
+            <td><input type="text" autocomplete="off" name="finalresult_shape" value="$!result.finalresultShape"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <a class="btn-input btn-sure" onclick="subjectResultUpdate()">提交</a>
+                <a class="btn-input btn-cancel" onclick="history.go(-1);">返回</a>
+            </td>
+        </tr>
+    </table>
+</form>
+<script type="text/javascript">
+    function subjectResultUpdate() {
+        $.ajax({
+            url: "/api/subject/result/update",
+            type: "post",
+            data: $("#subject-result-update-form").serialize(),
+            dataType: "json",
+            cache: false, // 上传文件无需缓存
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                alert(result.msg);
+                if (result.code == 200) {
+                    openUrl("/subject/$!subjectId/edit/result");
+                }
+            },error: function (result) {
+                alert("网络连接出错！");
+            }
+        });
+    }
+</script>

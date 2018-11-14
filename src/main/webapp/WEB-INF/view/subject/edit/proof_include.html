@@ -1,0 +1,79 @@
+#parse('/subject/edit/menu_include.html')
+<p class="title">课题论证设计</p>
+<form id="subject-proof-update-form">
+    <input type="hidden" name="subject_id" value="$!subjectId">
+    <table class="input-table browse-table" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 10px;">
+        <tr>
+            <td>学科类别</td>
+            <td>$!proof.subject.classification.desc</td>
+        </tr>
+        <tr>
+            <td>课题名称</td>
+            <td>$!proof.subject.name</td>
+        </tr>
+    </table>
+    <table border="0" cellspacing="0" cellpadding="0" style="margin: 0 20px 20px;">
+        <tr class="input-box">
+            <td colspan="2">(一)本课题核心概念界定，国内外研究现状述评，选题意义及研究价值。</td>
+        </tr>
+        <tr>
+            <td colspan="2"><textarea name="value" rows="4">$!proof.value</textarea></td>
+        </tr>
+        <tr class="input-box">
+            <td colspan="2">(二)本课题的研究目标、研究内容、研究假设和创新点。</td>
+        </tr>
+        <tr>
+            <td colspan="2"><textarea name="target" rows="4">$!proof.target</textarea></td>
+        </tr>
+        <tr class="input-box">
+            <td colspan="2">(三)本课题的研究思路、研究方法、技术路线和实施步骤。</td>
+        </tr>
+        <tr>
+            <td colspan="2"><textarea name="method" rows="4">$!proof.method</textarea></td>
+        </tr>
+        <tr class="input-box">
+            <td>附加论证材料</td>
+            <td>
+                #if($proof.file)
+                <a href="$!proof.file.fileUri">$!proof.file.filename</a>
+                #end
+                <input type="file" name="file">
+            </td>
+        </tr>
+    </table>
+    <div style=" margin: 20px;">
+        <a class="btn-input btn-cancel" data-url="/subject/host" onclick="openPage(this)">返回</a>
+        <a class="btn-input btn-cancel" onclick="subjectProofUpdate('/subject/$!subjectId/edit/recommender')">上一步</a>
+        <a class="btn-input btn-sure" onclick="subjectProofUpdate('/subject/$!subjectId/edit/feasibility')">下一步</a>
+    </div>
+</form>
+<script type="text/javascript">
+    function subjectProofUpdate(skipUrl) {
+        $.ajax({
+            url: "/api/subject/proof/update",
+            type: "post",
+            data: new FormData($("#subject-proof-update-form")[0]),
+            dataType: "json",
+            cache: false, // 上传文件无需缓存
+            processData: false, // 用于对data参数进行序列化处理 这里必须false
+            contentType: false, // 必须
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    if (skipUrl) {
+                        openUrl(skipUrl);
+                    } else {
+                        alert(result.msg);
+                    }
+                } else {
+                    alert(result.msg);
+                }
+            },error: function (result) {
+                alert("网络连接出错！");
+            }
+        });
+    }
+</script>

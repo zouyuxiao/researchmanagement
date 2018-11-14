@@ -1,0 +1,64 @@
+<p class="title">课题申报退回意见</p>
+<form id="subject-approval-check-form">
+    <input type="hidden" name="subject_id" value="$!subjectId">
+    <input type="hidden" name="check" value="false">
+    <table class="input-table" border="0" cellspacing="0" cellpadding="0">
+        <tr class="input-box">
+            <td>课题名称</td>
+            <td>$!approval.subject.name</td>
+        </tr>
+        <tr class="input-box">
+            <td>课题申请人姓名</td>
+            <td>$!approval.subject.user.realname</td>
+        </tr>
+        <tr class="input-box">
+            <td>申请课题类别</td>
+            <td>$!approval.subject.category.desc</td>
+        </tr>
+        <tr>
+            <td>市教育局科研办负责人姓名</td>
+            <td><input type="text" autocomplete="off" name="leader_name" value="$!currentUser.realname"></td>
+        </tr>
+        <tr class="input-box">
+            <td>退回时间</td>
+            <td>
+                <input type="hidden" name="check_time" value="$!dateTool.format('yyyy-MM-dd',$currentTime)">
+                <span>$!dateTool.format('yyyy年MM月dd日',$currentTime)</span>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" style="padding-top: 13px;">退回原因</td>
+            <td><textarea name="note" rows="4">$!approval.cityNote</textarea></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <a class="btn-input btn-sure" onclick="subjectCheck()">提交</a>
+                <a class="btn-input btn-cancel" onclick="history.go(-1);">返回</a>
+            </td>
+        </tr>
+    </table>
+</form>
+<script type="text/javascript">
+    function subjectCheck() {
+        $.ajax({
+            url: "/api/subject/approval/check",
+            type: "post",
+            data: $("#subject-approval-check-form").serialize(),
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                alert(result.msg);
+                if (result.code == 200) {
+                    openUrl("/subject/list/city");
+                }
+            },error: function (result) {
+                alert("网络连接失败！");
+            }
+        });
+    }
+</script>

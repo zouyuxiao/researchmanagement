@@ -1,0 +1,117 @@
+#parse('/subject/edit/menu_include.html')
+<p class="title">经费预算</p>
+<form id="subject-fund-update-form">
+    <input type="hidden" name="subject_id" value="$!subjectId">
+    <table class="input-table" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>资料费</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="data" value="$!fund.data" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>国内调研差旅费</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="travel" value="$!fund.travel" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>会议费</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="meeting" value="$!fund.meeting" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>设备、耗材费</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="equipment" value="$!fund.equipment" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>劳务及咨询费</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="service" value="$!fund.service" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>成果出版及印刷费</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="print" value="$!fund.print" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>结题鉴定费</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="identification" value="$!fund.identification" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>其它</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="other" value="$!fund.other" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>申请资助经费(元)</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="funding" value="$!fund.funding" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr>
+            <td>自筹经费(元)</td>
+            <td><input class="input-money" type="text" autocomplete="off" name="selfraised" value="$!fund.selfraised" onblur="checkMoney(this)"></td>
+        </tr>
+        <tr class="input-box">
+            <td>经费合计(元)</td>
+            <td><span>—</span></td>
+        </tr>
+        <tr>
+            <td valign="top" style="padding-top: 10px;">经费年度预算(元)</td>
+            <td style="padding: 0;">
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td><input class="input-year" type="text" autocomplete="off" name="budgets_year" value="#if($fund.budgets and $fund.budgets.size() > 0)$!dateTool.format('yyyy',$fund.budgets[0].year)#end" onblur="checkYear(this)">年</td>
+                        <td><input class="input-money" type="text" autocomplete="off" name="budgets_money" value="#if($fund.budgets and $fund.budgets.size() > 0)$!fund.budgets[0].money#end" onblur="checkMoney(this,'')"></td>
+                    </tr>
+                    <tr>
+                        <td><input class="input-year" type="text" autocomplete="off" name="budgets_year" value="#if($fund.budgets and $fund.budgets.size() > 1)$!dateTool.format('yyyy',$fund.budgets[1].year)#end" onblur="checkYear(this)">年</td>
+                        <td><input class="input-money" type="text" autocomplete="off" name="budgets_money" value="#if($fund.budgets and $fund.budgets.size() > 1)$!fund.budgets[1].money#end" onblur="checkMoney(this,'')"></td>
+                    </tr>
+                    <tr>
+                        <td><input class="input-year" type="text" autocomplete="off" name="budgets_year" value="#if($fund.budgets and $fund.budgets.size() > 2)$!dateTool.format('yyyy',$fund.budgets[2].year)#end" onblur="checkYear(this)">年</td>
+                        <td><input class="input-money" type="text" autocomplete="off" name="budgets_money" value="#if($fund.budgets and $fund.budgets.size() > 2)$!fund.budgets[2].money#end" onblur="checkMoney(this,'')"></td>
+                    </tr>
+                    <tr>
+                        <td><input class="input-year" type="text" autocomplete="off" name="budgets_year" value="#if($fund.budgets and $fund.budgets.size() > 3)$!dateTool.format('yyyy',$fund.budgets[3].year)#end" onblur="checkYear(this)">年</td>
+                        <td><input class="input-money" type="text" autocomplete="off" name="budgets_money" value="#if($fund.budgets and $fund.budgets.size() > 3)$!fund.budgets[3].money#end" onblur="checkMoney(this,'')"></td>
+                    </tr>
+                    <tr>
+                        <td><input class="input-year" type="text" autocomplete="off" name="budgets_year" value="#if($fund.budgets and $fund.budgets.size() > 4)$!dateTool.format('yyyy',$fund.budgets[4].year)#end" onblur="checkYear(this)">年</td>
+                        <td><input class="input-money" type="text" autocomplete="off" name="budgets_money" value="#if($fund.budgets and $fund.budgets.size() > 4)$!fund.budgets[4].money#end" onblur="checkMoney(this,'')"></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</form>
+<div style="margin: 20px;">
+    <a class="btn-input btn-cancel" onclick="subjectFundUpdate('/subject/$!subjectId/edit/result')">上一步</a>
+    <a class="btn-input btn-sure" onclick="subjectFundUpdate('/subject/host')">完成</a>
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        inputMoney($(".input-money"));
+        inputYear($(".input-year"));
+    });
+
+    function subjectFundUpdate(skipUrl) {
+        $.ajax({
+            url: "/api/subject/fund/update",
+            type: "post",
+            data: $("#subject-fund-update-form").serialize(),
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    if (skipUrl) {
+                        openUrl(skipUrl);
+                    } else {
+                        alert(result.msg);
+                    }
+                } else {
+                    alert(result.msg);
+                }
+            },error: function (result) {
+                alert("网络连接出错！");
+            }
+        });
+    }
+</script>

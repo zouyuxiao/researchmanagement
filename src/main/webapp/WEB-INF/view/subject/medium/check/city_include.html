@@ -1,0 +1,96 @@
+<p class="title">市教育局科研办意见</p>
+<form id="subject-medium-check-form">
+    <input type="hidden" name="subject_id" value="$!subjectId">
+    <table class="input-table" border="0" cellspacing="0" cellpadding="0">
+        <tr class="input-box">
+            <td>课题名称</td>
+            <td>$!medium.subject.name</td>
+        </tr>
+        <tr>
+            <td>市教育局科研办审核人姓名</td>
+            <td><input type="text" autocomplete="off" name="leader_name" value="$!currentUser.realname"></td>
+        </tr>
+        <tr>
+            <td>签署时间</td>
+            <td>
+                <input type="hidden" name="check_time" value="$!dateTool.format('yyyy-MM-dd',$currentTime)">
+                <span>$!dateTool.format('yyyy-MM-dd',$currentTime)</span>
+            </td>
+        </tr>
+        <tr>
+            <td>是否同意审核</td>
+            <td>
+                <input type="hidden" name="check" value="">
+                <select onchange="$(this).siblings('input').val($(this).val());">
+                    <option value="">请选择</option>
+                    <option value="true">是</option>
+                    <option value="false">否</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" style="padding-top: 13px;">点评意见</td>
+            <td><textarea name="note" rows="4">$!medium.cityNote</textarea></td>
+        </tr>
+        <tr>
+            <td valign="top">指导专家名单</td>
+            <td>
+                <table id="expert-list-table">
+                    <tr>
+                        <th>选择</th>
+                        <th>姓名</th>
+                        <th>单位</th>
+                        <th>职称</th>
+                        <th>研究专长</th>
+                    </tr>
+                    #foreach($expert in $experts)
+                    <tr data-id="$!expert.id">
+                        <td><input type="checkbox" name="expert_id" value="$!expert.id"></td>
+                        <td>$!expert.realname</td>
+                        <td>$!expert.unit.name</td>
+                        <td>$!expert.professionalTitle</td>
+                        <td>$!expert.profession</td>
+                    </tr>
+                    #end
+                    <tr>
+                        <td colspan="5" style="text-align: left;">
+                            <a class="btn btn-sure" onclick="selectAll(true)">全选</a>
+                            <a class="btn btn-cancel" onclick="selectAll(false)">全不选</a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div style="margin: 20px;">
+        <a class="btn-input btn-sure" onclick="subjectCheck()">提交</a>
+        <a class="btn-input btn-cancel" onclick="history.go(-1);">返回</a>
+    </div>
+</form>
+<script type="text/javascript">
+    function subjectCheck() {
+        $.ajax({
+            url: "/api/subject/medium/check",
+            type: "post",
+            data: $("#subject-medium-check-form").serialize(),
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                alert(result.msg);
+                if (result.code == 200) {
+                    openUrl("/subject/medium/list/school");
+                }
+            },error: function (result) {
+                alert("网络连接失败！");
+            }
+        });
+    }
+
+    function selectAll(checked) {
+        $("#expert-list-table").find("input[type=checkbox]").prop("checked", checked);
+    }
+</script>

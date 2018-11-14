@@ -1,0 +1,58 @@
+#parse('/subject/edit/menu_include.html')
+<p class="title">预期成果</p>
+<div style="margin: 10px 20px; text-align: right;">
+    <a class="btn-input btn-sure" data-url="/subject/$!subjectId/edit/result/add" onclick="openPage(this)">添加</a>
+</div>
+<table class="list-table" border="0" cellspacing="0" cellpadding="0" data-subject_id="$!subjectId">
+    <tr>
+        <th></th>
+        <th>完成时间</th>
+        <th>最终成果名称</th>
+        <th>最终成果形式</th>
+        <th>负责人</th>
+        <th>操作</th>
+    </tr>
+    #foreach($result in $results)
+    <tr data-id="$!result.id">
+        <td align="right" style="color: #808080;">$!velocityCount</td>
+        <td>$!dateTool.format('yyyy/MM/dd',$result.completetime)</td>
+        <td>$!result.finalresultName</td>
+        <td>$!result.finalresultShape</td>
+        <td>$!result.principal</td>
+        <td>
+            <a class="icon edit" title="修改" data-url="/subject/$!subjectId/edit/result/$!result.id/edit" onclick="openPage(this)"></a>
+            <a class="icon delete" title="删除" onclick="subjectResultDelete(this)"></a>
+        </td>
+    </tr>
+    #end
+</table>
+<div style="margin: 20px;">
+    <a class="btn-input btn-cancel" data-url="/subject/host" onclick="openPage(this)">返回</a>
+    <a class="btn-input btn-cancel" data-url="/subject/$!subjectId/edit/schedule" onclick="openPage(this)">上一步</a>
+    <a class="btn-input btn-sure" data-url="/subject/$!subjectId/edit/fund" onclick="openPage(this)">下一步</a>
+</div>
+<script type="text/javascript">
+    function subjectResultDelete(item) {
+        var tr = $(item).closest("tr");
+        $.ajax({
+            url: "/api/subject/personnel/delete",
+            type: "post",
+            data: "subject_id=" + tr.closest("table").data("subject_id") + "&id=" + tr.data("id"),
+            dataType: "json",
+            cache: false, // 上传文件无需缓存
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    tr.remove();
+                } else {
+                    alert(result.msg);
+                }
+            },error: function (result) {
+                alert("网络连接出错！");
+            }
+        });
+    }
+</script>

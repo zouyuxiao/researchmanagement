@@ -1,0 +1,58 @@
+#parse('/subject/edit/menu_include.html')
+<p class="title">完成项目的可行性</p>
+<form id="subject-feasibility-update-form">
+    <input type="hidden" name="subject_id" value="$!subjectId">
+    <table border="0" cellspacing="0" cellpadding="0" style="margin: 20px;">
+        <tr class="input-box">
+            <td>(一)本课题负责人已取得的相关研究成果及社会评价（引用、转载、获奖及被采纳情况），主要参考文献（限填10限）。</td>
+        </tr>
+        <tr>
+            <td><textarea name="achievement" rows="4">$!feasibility.achievement</textarea></td>
+        </tr>
+        <tr class="input-box">
+            <td>(二)课题组主要成员的主要研究经历、研究成果情况及研究分工。</td>
+        </tr>
+        <tr>
+            <td><textarea name="task" rows="4">$!feasibility.task</textarea></td>
+        </tr>
+        <tr class="input-box">
+            <td>(三)完成本课题的保障条件（如研究资料、实验仪器设备、配套经费、研究时间及所在单位条件等）。</td>
+        </tr>
+        <tr>
+            <td><textarea name="requirement" rows="4">$!feasibility.requirement</textarea></td>
+        </tr>
+    </table>
+    <div style="margin: 20px;">
+        <a class="btn-input btn-cancel" data-url="/subject/host" onclick="openPage(this)">返回</a>
+        <a class="btn-input btn-cancel" onclick="subjectFeasibilityUpdate('/subject/$!subjectId/edit/proof')">上一步</a>
+        <a class="btn-input btn-sure" onclick="subjectFeasibilityUpdate('/subject/$!subjectId/edit/schedule')">下一步</a>
+    </div>
+</form>
+<script type="text/javascript">
+    function subjectFeasibilityUpdate(skipUrl) {
+        $.ajax({
+            url: "/api/subject/feasibility/update",
+            type: "post",
+            data: $("#subject-feasibility-update-form").serialize(),
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                if (result.code == 200) {
+                    if (skipUrl) {
+                        openUrl(skipUrl);
+                    } else {
+                        alert(result.msg);
+                    }
+                } else {
+                    alert(result.msg);
+                }
+            },error: function (result) {
+                alert("网络连接出错！");
+            }
+        });
+    }
+</script>

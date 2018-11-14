@@ -1,0 +1,70 @@
+<p class="title">指派专家指导小组成员</p>
+<form id="subject-appoint-form">
+    <input type="hidden" name="subject_id" value="$!subjectId">
+    <table class="input-table" border="0" cellspacing="0" cellpadding="0">
+        <tr class="input-box">
+            <td>课题名称</td>
+            <td>$!approval.subject.name</td>
+        </tr>
+        <tr valign="top">
+            <td>专家名单</td>
+            <td style="padding: 0;">
+                <table id="expert-list-table" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <th>选择</th>
+                        <th>姓名</th>
+                        <th>单位</th>
+                        <th>职称</th>
+                        <th>研究专长</th>
+                    </tr>
+                    #foreach($expert in $experts)
+                    <tr data-id="$!expert.id">
+                        <td><input type="checkbox" name="expert_id" value="$!expert.id"></td>
+                        <td>$!expert.realname</td>
+                        <td>$!expert.unit.name</td>
+                        <td>$!expert.professionalTitle</td>
+                        <td>$!expert.profession</td>
+                    </tr>
+                    #end
+                    <tr>
+                        <td colspan="5" style="text-align: left;">
+                            <a class="btn btn-sure" onclick="selectAll(true)">全选</a>
+                            <a class="btn btn-cancel" onclick="selectAll(false)">全不选</a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <div style="margin: 20px;">
+        <a class="btn-input btn-sure" onclick="subjectAppoint()">提交</a>
+        <a class="btn-input btn-cancel" onclick="history.go(-1);">返回</a>
+    </div>
+</form>
+<script type="text/javascript">
+    function subjectAppoint() {
+        $.ajax({
+            url: "/api/subject/appoint",
+            type: "post",
+            data: $("#subject-appoint-form").serialize(),
+            dataType: "json",
+            cache: false,
+            beforeSend: function() {
+            },
+            complete: function() {
+            },
+            success: function (result) {
+                alert(result.msg);
+                if (result.code == 200) {
+                    openUrl("/subject/list/city");
+                }
+            },error: function (result) {
+                alert("网络连接失败！");
+            }
+        });
+    }
+
+    function selectAll(checked) {
+        $("#expert-list-table").find("input[type=checkbox]").prop("checked", checked);
+    }
+</script>

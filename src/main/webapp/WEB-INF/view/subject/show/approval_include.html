@@ -1,0 +1,54 @@
+#parse('/subject/show/menu_include.html')
+<p class="title">审批意见</p>
+<table class="input-table browse-table" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>1、课题主持人所在单位是否同意为本课题提供相关保障条件和承担信誉保证的意见</td>
+        <td>$!subject.approval.schoolNote</td>
+    </tr>
+    <tr>
+        <td>单位负责人姓名</td>
+        <td>$!approval.schoolLeaderName</td>
+    </tr>
+    <tr>
+        <td>签署时间</td>
+        <td>$!dateTool.format('yyyy年MM月dd日',$approval.schoolCheckTime)</td>
+    </tr>
+    <tr>
+        <td>2、区教育科研管理部门审核意见</td>
+        <td>$!approval.areaNote</td>
+    </tr>
+    <tr>
+        <td>区教育科研管理部门负责人姓名</td>
+        <td>$!approval.areaLeaderName</td>
+    </tr>
+    <tr>
+        <td>签署时间</td>
+        <td>$!dateTool.format('yyyy年MM月dd日',$approval.areaCheckTime)</td>
+    </tr>
+    <tr>
+        <td valign="top">3、专家指导小组成员评审意见</td>
+        <td style="padding: 0;">
+            #if($currentUser.roleType.value == 3)
+            #foreach($specialist in $approval.specialists)
+            #if($!specialist.note)
+            <p style="margin: 9px 8px;">$!specialist.realname：$!specialist.note（$!dateTool.format('yyyy/MM/dd',$specialist.checkTime)）</p>
+            #end
+            #end
+            #else
+            只有市科研办负责人可以查看！
+            #end
+        </td>
+    </tr>
+    <tr>
+        <td>4、市教育局（科研办）审批意见</td>
+        <td>$!approval.cityNote</td>
+    </tr>
+    <tr>
+        <td>市教育局（科研办）负责人姓名</td>
+        <td>$!approval.cityLeaderName</td>
+    </tr>
+    <tr>
+        <td>签署时间</td>
+        <td>$!dateTool.format('yyyy年MM月dd日',$approval.cityCheckTime)</td>
+    </tr>
+</table>
